@@ -1,0 +1,22 @@
+{
+  "name": "homebridge-denon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "engines": {
+    "node": ">=0.12.0",
+    "homebridge": ">=0.2.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "homebridge-plugin",
+    "homebridge"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "denon-client": "^0.2.4"
+  }
+}
