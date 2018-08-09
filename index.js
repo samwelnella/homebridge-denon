@@ -29,7 +29,11 @@ module.exports = function (homebridge) {
 
         Characteristic.call(this, 'Target Input', 'b7616767-935b-4c0a-baa6-70d58483b7f1');
         this.setProps({
-            format: Characteristic.Formats.STRING,
+            format: Characteristic.Formats.INT,
+            unit: Characteristic.Units.NONE,
+            maxValue: 8,
+            minValue: 0,
+            minStep: 1,
             perms: [Characteristic.Perms.READ, Characteristic.Perms.WRITE, Characteristic.Perms.NOTIFY]
         });
         this.value = this.getDefaultValue();
@@ -37,10 +41,10 @@ module.exports = function (homebridge) {
     util.inherits(Characteristic.TargetInputMode, Characteristic);
     Characteristic.TargetInputMode.UUID = 'b7616767-935b-4c0a-baa6-70d58483b7f1';
 
-    homebridge.registerAccessory('homebridge-denon', 'DenonReceiver', DenonReceiver, true);
+    homebridge.registerAccessory('homebridge-marantz-ip', 'MarantzReceiverIP', MarantzReceiverIP, true);
 };
 
-function DenonReceiver(log, config, api) {
+function MarantzReceiverIP(log, config, api) {
 
     this.log = log;
     this.ip = config['ip'];
@@ -103,8 +107,35 @@ function DenonReceiver(log, config, api) {
         this.denonClient.on("inputChanged", function(input) {
 
             //this.log("Input changed - " + input);
+            if (input == "CD") {
+                var inputInt = 1;
+            }
+            else if (input == "DVD") {
+                var inputInt = 2;
+            }
+            else if (input == "BD") {
+                var inputInt = 3;
+            }
+            else if (input == "GAME") {
+                var inputInt = 4;
+            }
+            else if (input == "AUX2") {
+                var inputInt = 5;
+            }
+            else if (input == "SAT/CBL") {
+                var inputInt = 6;
+            }
+            else if (input == "MPLAY") {
+                var inputInt = 7;
+            }
+            else if (input == "AUX1") {
+                var inputInt = 8;
+            }
+            else {
+                var inputInt = 0;
+            }
             this.speakerService.getCharacteristic(Characteristic.InputMode).updateValue(input, null, "remote");
-            this.speakerService.getCharacteristic(Characteristic.TargetInputMode).updateValue(input, null, "remote");
+            this.speakerService.getCharacteristic(Characteristic.TargetInputMode).updateValue(inputInt, null, "remote");
 
         }.bind(this));
 
@@ -161,17 +192,45 @@ function DenonReceiver(log, config, api) {
 
             .on("set", function(desiredInput, callback) {
 
+                if (desiredInput == 1) {
+                    var desiredInputStr = "CD";
+                }
+                else if (desiredInput == 2) {
+                    var desiredInputStr = "DVD";
+                }
+                else if (desiredInput == 3) {
+                    var desiredInputStr = "BD";
+                }
+                else if (desiredInput == 4) {
+                    var desiredInputStr = "GAME";
+                }
+                else if (desiredInput == 5) {
+                    var desiredInputStr = "AUX2";
+                }
+                else if (desiredInput == 6) {
+                    var desiredInputStr = "SAT/CBL";
+                }
+                else if (desiredInput == 7) {
+                    var desiredInputStr = "MPLAY";
+                }
+                else if (desiredInput == 8) {
+                    var desiredInputStr = "AUX1";
+                }
+                else {
+                    var desiredInputStr = "NONE";
+                }
+
                 //this.log("Set Target Input - " + desiredInput);
 
                 var validValue = false;
                 for (var key in Denon.Options.InputOptions) {
-                    if (Denon.Options.InputOptions[key] === desiredInput) {
+                    if (Denon.Options.InputOptions[key] === desiredInputStr) {
                         validValue = true;
                     }
                 }
 
                 if (validValue) {
-                    this.denonClient.setInput(desiredInput).then(function() {
+                    this.denonClient.setInput(desiredInputStr).then(function() {
                         callback(null, false);
                     });
                 }
@@ -246,7 +305,7 @@ function DenonReceiver(log, config, api) {
 }
 
 
-DenonReceiver.prototype.getServices = function() {
+MarantzReceiverIP.prototype.getServices = function() {
     return [
         this.powerService,
         this.speakerService,
