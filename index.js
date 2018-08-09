@@ -41,10 +41,10 @@ module.exports = function (homebridge) {
     util.inherits(Characteristic.TargetInputMode, Characteristic);
     Characteristic.TargetInputMode.UUID = 'b7616767-935b-4c0a-baa6-70d58483b7f1';
 
-    homebridge.registerAccessory('homebridge-marantz-ip', 'MarantzReceiverIP', MarantzReceiverIP, true);
+    homebridge.registerAccessory('homebridge-denon', 'DenonReceiver', DenonReceiver, true);
 };
 
-function MarantzReceiverIP(log, config, api) {
+function DenonReceiver(log, config, api) {
 
     this.log = log;
     this.ip = config['ip'];
@@ -305,7 +305,7 @@ function MarantzReceiverIP(log, config, api) {
 }
 
 
-MarantzReceiverIP.prototype.getServices = function() {
+DenonReceiver.prototype.getServices = function() {
     return [
         this.powerService,
         this.speakerService,
